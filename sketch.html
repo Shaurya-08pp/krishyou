@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Princess Day 👑</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Kalam&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Poppins',system-ui,sans-serif;color:#fff;display:flex;justify-content:center;
+  background:linear-gradient(180deg,#140b3a 0%,#3b1a78 55%,#a8408f 100%);transition:background 1s}
+body.pink{background:linear-gradient(180deg,#f9c4de,#ec97c6 60%,#c98be6)}
+body.pink h1,body.pink .sub{color:#7d1a56;text-shadow:none}
+
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:tw 3s infinite ease-in-out}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:1}}
+
+#app{position:relative;z-index:1;width:100%;max-width:430px;height:100%}
+.screen{position:absolute;inset:0;padding:24px 22px;text-align:center;overflow-y:auto;
+  opacity:0;visibility:hidden;transform:translateY(20px) scale(.98);
+  transition:opacity .7s,transform .7s,visibility .7s}
+.screen.active{opacity:1;visibility:visible;transform:none}
+.wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+
+.script{font-family:'Dancing Script','Brush Script MT',cursive;font-weight:700}
+h1{font-size:2.1rem;line-height:1.15;text-shadow:0 0 18px rgba(255,190,255,.6)}
+.sub{font-size:.92rem;opacity:.9;line-height:1.55}
+.float{animation:fl 4s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.btn{border:0;cursor:pointer;color:#fff;font:600 1rem 'Poppins',sans-serif;padding:14px 26px;border-radius:40px;
+  background:linear-gradient(135deg,#ff5fa2,#d63a8b);box-shadow:0 8px 24px rgba(255,80,160,.45);animation:pulse 2s infinite}
+.btn:disabled{opacity:.4;animation:none;cursor:not-allowed}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.glass{width:100%;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);
+  backdrop-filter:blur(8px);border-radius:20px;padding:18px;line-height:1.6;font-size:.9rem;text-align:left}
+.glass p+p{margin-top:10px}
+.chip{background:rgba(255,255,255,.25);padding:8px 16px;border-radius:14px;font-size:.85rem}
+
+/* moon */
+.moon{position:absolute;top:30px;right:50px;width:30px;height:30px;border-radius:50%;box-shadow:-9px 3px 0 0 #fff3c4}
+
+/* envelope */
+.env{position:relative;width:240px;height:160px;cursor:pointer;margin:10px 0}
+.e-back{position:absolute;inset:0;background:#d45bad;border-radius:10px}
+.e-paper{position:absolute;left:14px;right:14px;top:14px;bottom:20px;background:#fff;border-radius:6px;transition:transform .8s .5s}
+.e-front{position:absolute;inset:0;border-radius:10px;background:linear-gradient(135deg,#f08bc8,#e26ab5);
+  clip-path:polygon(0 30%,50% 62%,100% 30%,100% 100%,0 100%)}
+.flap{position:absolute;left:0;right:0;top:0;height:90px;background:#f3a0d4;clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top;transition:transform .6s;z-index:3;border-radius:10px 10px 0 0}
+.env.open .flap{transform:rotateX(180deg);z-index:0}
+.env.open .e-paper{transform:translateY(-55px)}
+
+/* invitation */
+.invite{display:none;width:100%;color:#7a4a1a;border:3px solid #e8b95a;border-radius:22px;padding:24px 20px;
+  background:linear-gradient(160deg,#fff8e6,#ffe4ba);box-shadow:0 0 35px rgba(255,210,120,.7);position:relative}
+.invite.show{display:block;animation:pop .7s}
+.invite small{letter-spacing:3px;font-size:.65rem;color:#b07a2a}
+.invite p{font-family:'Dancing Script',cursive;font-weight:700;font-size:1.25rem;line-height:1.5;margin:12px 0 16px}
+.seal{border:0;width:46px;height:46px;border-radius:50%;font-size:1.3rem;cursor:pointer;
+  background:radial-gradient(circle,#ff7ab8,#d63a8b);box-shadow:0 0 18px #ff5fa2;animation:pulse 1.8s infinite}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* letter */
+.paper{width:100%;height:270px;background:#fbf7ea;color:#3a2b2b;border:8px solid #e0528f;border-radius:14px;
+  padding:14px 16px;font-family:'Kalam','Segoe Print',cursive;text-align:left;font-size:1rem;line-height:1.5;
+  overflow:auto;white-space:pre-wrap;box-shadow:0 10px 30px rgba(180,40,120,.4);cursor:pointer}
+.hint{font-size:.72rem;color:#8a2d63}
+
+/* flip cards */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%}
+.card{perspective:700px;height:110px;cursor:pointer}
+.in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s}
+.card.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;font-size:.78rem}
+.cf{background:linear-gradient(160deg,#ffc3e1,#f27cb8);color:#7b1650;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.cf b{font-size:.95rem;font-family:'Dancing Script',cursive}
+.cb{background:#fff8ec;color:#6a4a2a;transform:rotateY(180deg)}
+.cb b{font-size:.65rem;color:#c0407f;letter-spacing:1px;margin-bottom:4px}
+
+/* gift */
+.balloons{font-size:2rem;display:flex;gap:70px}
+.balloons span{animation:fl 3s ease-in-out infinite}
+.balloons span:nth-child(2){animation-delay:1s}
+.gift{position:relative;width:130px;height:140px;margin:20px auto 10px}
+.gbox,.glid{position:absolute;left:0}
+.gbox{bottom:0;width:130px;height:90px;background:#ff7fbf;border-radius:8px}
+.glid{top:6px;left:-8px;width:146px;height:36px;background:#ff5fa8;border-radius:8px;transition:transform .9s,opacity .9s}
+.gbox::after,.glid::after{content:'';position:absolute;left:50%;margin-left:-10px;width:20px;top:0;bottom:0;background:#ffd76a}
+.bow{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:36px;z-index:2}
+.gift.open .glid{transform:translateY(-80px) rotate(-20deg);opacity:0}
+.gift.open .gbox{animation:pop .6s}
+
+/* gift list + promises */
+.item{width:100%;background:rgba(255,255,255,.8);color:#6b2a55;border-radius:14px;padding:10px 14px;
+  text-align:left;font-size:.85rem;opacity:0}
+.screen.active .item{animation:up .6s forwards}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.note{background:#fffdf3;font-family:'Kalam',cursive;font-size:.95rem;transform:rotate(-1.5deg)}
+.prom{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.14);color:#fff;font:.9rem 'Poppins',sans-serif;padding:12px;border-radius:14px;cursor:pointer;transition:.3s}
+.prom span{width:26px;height:26px;border-radius:50%;background:#ffc94d;color:#5a3a00;display:flex;align-items:center;justify-content:center;font-weight:600}
+.prom.done{background:rgba(255,95,162,.55)}
+.heart{font-size:2.2rem;animation:pulse 1.2s infinite}
+.scene{font-size:2.6rem}
+.sign{font-family:'Dancing Script',cursive;font-size:1.3rem;text-align:right;margin-top:10px}
+
+/* effects */
+.sp,.rise{position:fixed;pointer-events:none;z-index:50}
+.sp{animation:bs 1.1s ease-out forwards}
+@keyframes bs{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+.rise{bottom:-30px;animation:rs 5s linear forwards}
+@keyframes rs{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div id="app">
+
+<!-- 1: CASTLE INTRO -->
+<section class="screen active" id="s1"><div class="wrap">
+  <div class="moon"></div>
+  <svg class="float" width="230" viewBox="0 -30 200 200">
+    <rect x="50" y="70" width="100" height="90" fill="#b9a0f0"/>
+    <rect x="22" y="48" width="32" height="112" fill="#a58ae6"/>
+    <rect x="146" y="48" width="32" height="112" fill="#a58ae6"/>
+    <rect x="84" y="28" width="32" height="132" fill="#b39af0"/>
+    <polygon points="18,48 38,6 58,48" fill="#5b6be0"/>
+    <polygon points="142,48 162,6 182,48" fill="#5b6be0"/>
+    <polygon points="80,28 100,-12 120,28" fill="#6a78ec"/>
+    <line x1="100" y1="-12" x2="100" y2="-27" stroke="#fff" stroke-width="2"/>
+    <polygon points="100,-27 114,-22 100,-17" fill="#ff6fae"/>
+    <rect x="94" y="48" width="12" height="18" rx="6" fill="#ffe9a8"/>
+    <rect x="32" y="72" width="12" height="18" rx="6" fill="#ffe9a8"/>
+    <rect x="156" y="72" width="12" height="18" rx="6" fill="#ffe9a8"/>
+    <rect x="62" y="95" width="10" height="14" rx="5" fill="#ffe9a8"/>
+    <rect x="128" y="95" width="10" height="14" rx="5" fill="#ffe9a8"/>
+    <path d="M88 160 V132 a12 12 0 0 1 24 0 V160 Z" fill="#6f46b8"/>
+  </svg>
+  <div style="font-size:2rem">👑</div>
+  <h1 class="script">Attention, Your Royal Highness…</h1>
+  <p class="sub">Someone has a little royal surprise waiting just for you, Princess <span class="her"></span>.</p>
+  <button class="btn" onclick="go(2)">Open Invitation 💌</button>
+</div></section>
+
+<!-- 2: ENVELOPE + INVITATION -->
+<section class="screen" id="s2"><div class="wrap">
+  <h1 class="script" id="s2t">A Royal Letter Has Arrived 💌</h1>
+  <div class="env" id="env" onclick="openEnv()">
+    <div class="e-back"></div><div class="e-paper"></div><div class="e-front"></div><div class="flap"></div>
+  </div>
+  <p class="sub" id="tapHint">Tap the envelope to open it</p>
+  <div class="invite" id="invite">
+    <small>BY ROYAL INVITATION</small>
+    <p id="inviteText"></p>
+    <button class="seal" onclick="go(3)">💗</button>
+  </div>
+</div></section>
+
+<!-- 3: WELCOME -->
+<section class="screen" id="s3"><div class="wrap">
+  <div class="scene float">🌳👸🌹</div>
+  <h1 class="script">Welcome to Your Little Kingdom, Princess <span class="her"></span> 💗</h1>
+  <div class="glass" id="welcomeText"></div>
+  <div class="chip">Your Smile = Sunshine of many ☀️</div>
+  <button class="btn" onclick="go(4)">Continue ✨</button>
+</div></section>
+
+<!-- 4: LETTER -->
+<section class="screen" id="s4"><div class="wrap">
+  <h1 class="script">A Little Letter from Your...... Editor Friend 💌</h1>
+  <div class="paper" id="paper"><span id="letterText"></span></div>
+  <p class="hint">Tap the letter to reveal it all 💕</p>
+  <button class="btn" id="letterBtn" style="visibility:hidden" onclick="go(5)">Continue 💌</button>
+</div></section>
+
+<!-- 5: FLIP CARDS -->
+<section class="screen" id="s5"><div class="wrap">
+  <h1 class="script">Do You Know Why You're So Special? 🌼</h1>
+  <p class="sub">Tap each royal card to reveal its little secret.</p>
+  <div class="grid" id="grid"></div>
+  <p class="sub"><span id="count">0</span> of 6 royal secrets revealed</p>
+  <button class="btn" id="unlock" disabled onclick="go(6)">Unlock My Royal Surprise 🎀</button>
+</div></section>
+
+<!-- 6: GIFT -->
+<section class="screen" id="s6"><div class="wrap">
+  <h1 class="script">Your Princess Day Gift Is Here! 🎁</h1>
+  <p class="sub">Ready to discover your little surprise?</p>
+  <div class="balloons"><span>🎈</span><span>🎈</span></div>
+  <div class="gift" id="gift"><div class="gbox"></div><div class="glid"><span class="bow">🎀</span></div></div>
+  <button class="btn" onclick="unwrap()">Unwrap Your Gift 💗</button>
+</div></section>
+
+<!-- 7: GIFT LIST -->
+<section class="screen" id="s7"><div class="wrap">
+  <h1 class="script">Your Princess Day Gift Is Here! 🎁</h1>
+  <div class="item" style="animation-delay:.3s"><b>🤗 A Virtual Hug</b><br>Imagine the warmest hug, just for you.</div>
+  <div class="item" style="animation-delay:1s"><b>🌹 A Bouquet of Roses</b><br>One rose for every little reason you make life more beautiful.</div>
+  <div class="item" style="animation-delay:1.7s"><b>🛡️ A Royal Promise</b><br>I'll always try to treat you with care and respect.</div>
+  <div class="item note" style="animation-delay:2.4s"><b>A Little Note for You 💌</b><br>Happy Princess Day! I hope today feels as lovely as you cam think. You deserve every bit of this magic.     (Also, waiting for replies)</div>
+  <button class="btn" onclick="go(8)">One Last Thing… 💗</button>
+</div></section>
+
+<!-- 8: PROMISES -->
+<section class="screen" id="s8"><div class="wrap">
+  <div class="scene">👸🤴</div>
+  <h1 class="script">My Promise to You, Princess 👑</h1>
+  <div class="heart">💗</div>
+  <div class="glass" id="promiseText"></div>
+  <button class="prom" onclick="tick(this)"><span>1</span>I'll Cheer for Your Dreams</button>
+  <button class="prom" onclick="tick(this)"><span>2</span>I'll Respect Your Feelings</button>
+  <button class="prom" onclick="tick(this)"><span>3</span>I'll Always Be There</button>
+  <button class="btn" id="finalBtn" style="display:none" onclick="go(9)">Your Final Surprise 💝</button>
+</div></section>
+
+<!-- 9: FINAL MESSAGE -->
+<section class="screen" id="s9"><div class="wrap">
+  <div class="scene float">🏰✨</div>
+  <h1 class="script">Happy Princess Day, My Princess! 👑</h1>
+  <div class="glass"><div id="finalText"></div><div class="sign" id="sign"></div></div>
+  <button class="btn" onclick="hug()">Send a Royal Hug 🤗</button>
+</div></section>
+
+<!-- 10: HUG DELIVERED -->
+<section class="screen" id="s10"><div class="wrap">
+  <div class="scene float">👸🤴</div>
+  <h1 class="script">Royal Hug Delivered! You deserve all the happiness in this kingdom of yours.</h1>
+  <button class="btn" onclick="go(1)">Back to the kingdom 💗</button>
+</div></section>
+
+</div>
+
+<script>
+/* ================= CONFIG: change these ================= */
+const HER  = "Prerna";        // her name
+const ME   = "Shaurya";   // your name (signature)
+const INVITE  = `By royal invitation, you are requested to enter a little virtual world made especially for you. Your presence makes everything more magical in this place.`;
+const WELCOME = `If I could create a whole kingdom for someone, I'd make it for you (& for children). A place where your smile could light up every corner, your happiness matters more than anything here, and every little moment should feels like a fairytale.`;
+const LETTER  = `Dear Princess ${HER},\n\nMaybe I can't give you a real castle, a thousand diamonds, or a crown made of gold of a true princess. But I hope I can give you something even more precious: genuine care, maybe countless reasons to smile, someone who listens to you, and little moments that make you feel special.\n\nYou deserve kindness on your difficult days, happiness in your ordinary moments, and care that never makes you feel like you have to be someone else.\n\nYesterday was Princess Day, but honestly, 🤔you deserve to feel special every single day.😗`;
+const SECRETS = [
+  ["Your Smile","It definetely suits you."],
+  ["Your Heart","Your kindness is one of your prettiest qualities."],
+  ["Your Eyes","They notice the smallest moments, and make them precious."],
+  ["Your Personality","You have your own kind of magic."],
+  ["Your Strength","You keep going even on the hard days even when you want to give up or isn't feeling well."],
+  ["Your Little Habits","Can't & won't assume because I don't know MUCH."]
+];
+const PROMISE = `I can't promise that every day will be perfect, but I can promise to keep being here for ya whenever yu need me. I'll respect your sayings, cheer for your dreams, and remind you that you never have to be perfect to be precious nor have to listen to others.`;
+const FINAL = `Yesterday, the world celebrated Princess Day, but I hope you remember something special: you don't need a fairytale to be extraordinary.\n\nYou have your own magic, your own dreams, your own beautiful story. And I hope life gives you a million reasons to smile, endless courage to chase your dreams, and people who remind you how precious you are.\n\nSo here's your little reminder, Princess…\n\nKeep shining. Keep dreaming. Keep being beautifully YOU.`;
+/* ======================================================== */
+
+const $ = id => document.getElementById(id);
+let cur = 1, typer, heartTimer, revealed = 0, promised = 0;
+
+// fill texts
+document.querySelectorAll('.her').forEach(e => e.textContent = HER);
+$('inviteText').textContent = INVITE;
+$('welcomeText').textContent = WELCOME;
+$('promiseText').textContent = PROMISE;
+$('finalText').style.whiteSpace = 'pre-wrap';
+$('finalText').textContent = FINAL;
+$('sign').textContent = "With lots of love, " + ME + " 💗";
+
+// twinkling stars
+for (let i = 0; i < 70; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.animationDelay = Math.random() * 3 + 's';
+  $('stars').appendChild(s);
+}
+
+// screen switching
+function go(n) {
+  $('s' + cur).classList.remove('active');
+  cur = n;
+  $('s' + n).classList.add('active');
+  document.body.classList.toggle('pink', n === 4 || n === 6 || n === 7);
+  clearInterval(heartTimer);
+  if (n === 2) { $('env').classList.remove('open'); $('env').style.display = ''; $('invite').classList.remove('show'); $('tapHint').style.display = ''; $('s2t').style.display = ''; }
+  if (n === 4) typeLetter();
+  if (n === 5) buildCards();
+  if (n === 6) $('gift').classList.remove('open');
+  if (n === 8) { promised = 0; $('finalBtn').style.display = 'none'; document.querySelectorAll('.prom').forEach((p, i) => { p.classList.remove('done'); p.firstChild.textContent = i + 1; }); }
+  if (n === 10) { burst(innerWidth / 2, innerHeight / 2, '💖', 26); heartTimer = setInterval(rise, 350); }
+}
+
+// sparkle burst
+function burst(x, y, emoji = '✨', n = 16) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span');
+    s.className = 'sp'; s.textContent = emoji;
+    const a = Math.random() * 6.28, d = 60 + Math.random() * 120;
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px');
+    s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+}
+function burstAt(el, emoji, n) {
+  const r = el.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2, emoji, n);
+}
+function rise() {
+  const h = document.createElement('span');
+  h.className = 'rise';
+  h.textContent = ['💖', '💗', '✨', '💕'][Math.floor(Math.random() * 4)];
+  h.style.left = Math.random() * 100 + 'vw';
+  h.style.fontSize = 14 + Math.random() * 18 + 'px';
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 5000);
+}
+
+// screen 2
+function openEnv() {
+  const env = $('env');
+  if (env.classList.contains('open')) return;
+  env.classList.add('open');
+  $('tapHint').style.display = 'none';
+  setTimeout(() => { env.style.display = 'none'; $('s2t').style.display = 'none'; $('invite').classList.add('show'); burstAt($('invite'), '✨', 14); }, 1400);
+}
+
+// screen 4 : typing letter
+function typeLetter() {
+  clearInterval(typer);
+  const el = $('letterText'), b = $('letterBtn');
+  el.textContent = ''; b.style.visibility = 'hidden';
+  let i = 0;
+  typer = setInterval(() => {
+    el.textContent = LETTER.slice(0, ++i);
+    $('paper').scrollTop = $('paper').scrollHeight;
+    if (i >= LETTER.length) { clearInterval(typer); b.style.visibility = 'visible'; }
+  }, 30);
+}
+$('paper').onclick = () => {
+  clearInterval(typer);
+  $('letterText').textContent = LETTER;
+  $('letterBtn').style.visibility = 'visible';
+};
+
+// screen 5 : flip cards
+function buildCards() {
+  revealed = 0; $('count').textContent = 0; $('unlock').disabled = true;
+  const g = $('grid'); g.innerHTML = '';
+  SECRETS.forEach(([t, txt]) => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = `<div class="in"><div class="face cf"><b>${t}</b><small>Tap to reveal ✨</small></div><div class="face cb"><b>${t.toUpperCase()}</b>${txt}</div></div>`;
+    c.onclick = () => {
+      if (c.classList.contains('flip')) return;
+      c.classList.add('flip');
+      burstAt(c, '✨', 8);
+      $('count').textContent = ++revealed;
+      if (revealed === SECRETS.length) $('unlock').disabled = false;
+    };
+    g.appendChild(c);
+  });
+}
+
+// screen 6 : gift
+function unwrap() {
+  const g = $('gift');
+  if (g.classList.contains('open')) return;
+  g.classList.add('open');
+  burstAt(g, '💖', 22);
+  setTimeout(() => go(7), 1700);
+}
+
+// screen 8 : promises
+function tick(btn) {
+  if (btn.classList.contains('done')) return;
+  btn.classList.add('done');
+  btn.firstChild.textContent = '✓';
+  burstAt(btn, '💗', 8);
+  if (++promised === 3) $('finalBtn').style.display = '';
+}
+
+// screen 9
+function hug() { go(10); }
+</script>
+</body>
+</html>
